@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 
 # Change your executable name to something creative!
-set(NAME pico-boilerplate) # <-- Name your project/executable here!
+set(NAME HUB75-BLOCK) # <-- Name your project/executable here!
 
 include(pimoroni_pico_import.cmake)
 include(pico_sdk_import.cmake)
@@ -35,6 +35,9 @@ target_link_libraries(${NAME}
     pico_explorer # <-- List libraries here!
     hub75
 )
+
+pico_enable_stdio_usb(HUB75-BLOCK 1)
+pico_enable_stdio_uart(HUB75-BLOCK 0)
 
 # create map/bin/hex file etc.
 pico_add_extra_outputs(${NAME})

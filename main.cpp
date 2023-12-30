@@ -1,29 +1,63 @@
 #include <math.h>
 #include "pico/stdlib.h"
+#include <stdio.h>
 
 #include "libraries/pico_graphics/pico_graphics.hpp"
 #include "drivers/hub75/hub75.hpp"
 
+#define WIDTH 64
+#define HEIGHT 32
+
+#define NUM_OF_DATA 8
+
+
+float vertices[] = { // positions   // normals // texture coords
+   	-0.5f, -0.5f, -0.5f,	0.0f,  0.0f, -1.0f,		0.0f, 0.0f, 
+     0.5f, -0.5f, -0.5f,	0.0f,  0.0f, -1.0f, 	1.0f, 0.0f,
+     0.5f, 	0.5f, -0.5f,	0.0f,  0.0f, -1.0f, 	1.0f, 1.0f,
+     0.5f, 	0.5f, -0.5f,	0.0f,  0.0f, -1.0f, 	1.0f, 1.0f,
+   	-0.5f, 	0.5f, -0.5f,	0.0f,  0.0f, -1.0f, 	0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,	0.0f,  0.0f, -1.0f, 	0.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,	0.0f,  0.0f,  1.0f, 	0.0f, 0.0f, 
+	 0.5f, -0.5f,  0.5f, 	0.0f,  0.0f,  1.0f, 	1.0f, 0.0f, 
+	 0.5f, 	0.5f,  0.5f, 	0.0f,  0.0f,  1.0f, 	1.0f, 1.0f,
+	 0.5f, 	0.5f,  0.5f, 	0.0f,  0.0f,  1.0f, 	1.0f, 1.0f, 
+	-0.5f, 	0.5f,  0.5f, 	0.0f,  0.0f,  1.0f, 	0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f, 	0.0f,  0.0f,  1.0f,		0.0f, 0.0f,
+    -0.5f, 	0.5f,  0.5f,   -1.0f,  0.0f,  0.0f, 	1.0f, 0.0f, 
+	-0.5f, 	0.5f, -0.5f,   -1.0f,  0.0f,  0.0f, 	1.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,   -1.0f,  0.0f,  0.0f, 	0.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,   -1.0f,  0.0f,  0.0f, 	0.0f, 1.0f, 
+	-0.5f, -0.5f,  0.5f,   -1.0f,  0.0f,  0.0f,	 	0.0f, 0.0f,
+    -0.5f, 	0.5f,  0.5f,   -1.0f,  0.0f,  0.0f, 	1.0f, 0.0f,
+	 0.5f, 	0.5f,  0.5f, 	1.0f,  0.0f,  0.0f, 	1.0f, 0.0f, 
+	 0.5f, 	0.5f, -0.5f, 	1.0f,  0.0f,  0.0f, 	1.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f, 	1.0f,  0.0f,  0.0f, 	0.0f, 1.0f, 
+	 0.5f, -0.5f, -0.5f, 	1.0f,  0.0f,  0.0f, 	0.0f, 1.0f,
+	 0.5f, -0.5f,  0.5f, 	1.0f,  0.0f,  0.0f, 	0.0f, 0.0f,
+	 0.5f, 	0.5f,  0.5f, 	1.0f,  0.0f,  0.0f, 	1.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f, 	0.0f, -1.0f,  0.0f, 	0.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f, 	0.0f, -1.0f,  0.0f, 	1.0f, 1.0f,
+	 0.5f, -0.5f,  0.5f, 	0.0f, -1.0f,  0.0f, 	1.0f, 0.0f,
+	 0.5f, -0.5f,  0.5f, 	0.0f, -1.0f,  0.0f, 	1.0f, 0.0f,
+	-0.5f, -0.5f,  0.5f, 	0.0f, -1.0f,  0.0f, 	0.0f, 0.0f,
+	-0.5f, -0.5f, -0.5f, 	0.0f, -1.0f,  0.0f, 	0.0f, 1.0f,
+    -0.5f, 	0.5f, -0.5f, 	0.0f,  1.0f,  0.0f, 	0.0f, 1.0f,
+	 0.5f, 	0.5f, -0.5f, 	0.0f,  1.0f,  0.0f, 	1.0f, 1.0f, 
+	 0.5f, 	0.5f,  0.5f, 	0.0f,  1.0f,  0.0f, 	1.0f, 0.0f, 
+	 0.5f, 	0.5f,  0.5f, 	0.0f,  1.0f,  0.0f, 	1.0f, 0.0f, 
+	-0.5f, 	0.5f,  0.5f, 	0.0f,  1.0f,  0.0f, 	0.0f, 0.0f, 
+	-0.5f, 	0.5f, -0.5f, 	0.0f,  1.0f,  0.0f, 	0.0f, 1.0f
+};
+
 using namespace pimoroni;
 
-const uint8_t QTY_BALLS = 10;
+const uint8_t QTY_BALLS = 13;
 
-//If the display looks streaky or corrupted then uncomment one of the other initalisers
 
-//Works with our 32x32 panels https://shop.pimoroni.com/products/rgb-led-matrix-panel?variant=35962488650 https://shop.pimoroni.com/products/rgb-led-matrix-panel?variant=19321740999
-//Hub75 hub75(32, 32, nullptr, PANEL_GENERIC, false);
-//or using 2 of these panels
-//Hub75 hub75(64, 32, nullptr, PANEL_GENERIC, false);
 
-//and 64x32 panel https://shop.pimoroni.com/products/rgb-led-matrix-panel?variant=42312764298
-//Hub75 hub75(64, 32, nullptr, PANEL_GENERIC, false);
-//or using 2 of these panels
-//Hub75 hub75(128, 32, nullptr, PANEL_GENERIC, false);
+Hub75 hub75(WIDTH, HEIGHT, nullptr, PANEL_FM6126A, false);
 
-//Works with our 64x64 panel https://shop.pimoroni.com/products/rgb-led-matrix-panel?variant=3029531983882
-Hub75 hub75(64, 64, nullptr, PANEL_FM6126A, false);
-//or using 2 of these panels
-//Hub75 hub75(128, 64, nullptr, PANEL_GENERIC, false);
 
 
 
@@ -31,94 +65,82 @@ PicoGraphics_PenRGB888 graphics(hub75.width, hub75.height, nullptr);
 
 // Callback for the dma interrupt (required)
 void __isr dma_complete() {
-  hub75.dma_complete();
+  	hub75.dma_complete();
 }
 
-// HSV Conversion expects float inputs in the range of 0.00-1.00 for each channel
-// Outputs are rgb in the range 0-255 for each channel
-void from_hsv(float h, float s, float v, uint8_t &r, uint8_t &g, uint8_t &b) {
-  float i = floor(h * 6.0f);
-  float f = h * 6.0f - i;
-  v *= 255.0f;
-  uint8_t p = v * (1.0f - s);
-  uint8_t q = v * (1.0f - f * s);
-  uint8_t t = v * (1.0f - (1.0f - f) * s);
+double distance(const Point &p1, const Point &p2) {
+    int32_t dx = p2.x - p1.x;
+    int32_t dy = p2.y - p1.y;
+    return sqrt(dx * dx + dy * dy);
+}
 
-  switch (int(i) % 6) {
-    case 0: r = v; g = t; b = p; break;
-    case 1: r = q; g = v; b = p; break;
-    case 2: r = p; g = v; b = t; break;
-    case 3: r = p; g = q; b = v; break;
-    case 4: r = t; g = p; b = v; break;
-    case 5: r = v; g = p; b = q; break;
-  }
+    // Function to draw a line between two points using pixel_span
+void draw_line(const Point &p1, const Point &p2) {
+	    double len = distance(p1, p2);
+
+        int32_t dx = p2.x - p1.x;
+        int32_t dy = p2.y - p1.y;
+
+        double unitX = dx / len;
+        double unitY = dy / len;
+
+        for (int32_t i = 0; i <= len; ++i) {
+            int32_t px = static_cast<int32_t>(p1.x + unitX * i);
+            int32_t py = static_cast<int32_t>(p1.y + unitY * i);
+
+            // Draw pixel at the current point
+            graphics.set_pixel(Point(px, py));
+        }
+}
+
+Point convertPoint(int row){
+	float carC= vertices[row+2]+1.1;
+
+	float carA = (vertices[row]/carC)+1;
+	float carB = (vertices[row+1]/carC)+1;
+	// convert to cartesian
+	carA *= WIDTH/2;
+	carB *=HEIGHT/2;
+	printf("%f %f \n",carA,carB);
+	return Point(carA,carB);
 }
 
 int main() {
-  hub75.start(dma_complete);
+	stdio_init_all();
+	hub75.start(dma_complete);
 
-  struct pt {
-    float      x;
-    float      y;
-    uint8_t    r;
-    float     dx;
-    float     dy;
-    Pen pen;
-  };
 
-  std::vector<pt> shapes;
-  for(uint8_t i = 0; i < QTY_BALLS; i++) {
-    pt shape;
-    shape.x = rand() % graphics.bounds.w;
-    shape.y = rand() % graphics.bounds.h;
-    shape.r = (rand() % 5) + 2;
-    shape.dx = float(rand() % 255) / 128.0f;
-    shape.dy = float(rand() % 255) / 128.0f;
-    shape.pen = graphics.create_pen(rand() % 255, rand() % 255, rand() % 255);
-    shapes.push_back(shape);
-  }
 
-  Point text_location(0, 0);
+	Point text_location(0, 0);
+	Pen BG = graphics.create_pen(0, 0, 0);
+	Pen red = graphics.create_pen(125, 0, 0);
 
-  Pen BG = graphics.create_pen(0, 0, 0);
-  Pen WHITE = graphics.create_pen(200, 200, 200);
+	while(true) {
+		graphics.set_pen(BG);
+		graphics.clear();
+		for(int i =0 ;i < 36 ;i+=3){
 
-  while(true) {
-    graphics.set_pen(BG);
-    graphics.clear();
+			graphics.set_pen(red);
+			// for some reason the graphics display starts at -1?
 
-    for(auto &shape : shapes) {
-      shape.x += shape.dx;
-      shape.y += shape.dy;
-      if((shape.x - shape.r) < 0) {
-        shape.dx *= -1;
-        shape.x = shape.r;
-      }
-      if((shape.x + shape.r) >= graphics.bounds.w) {
-        shape.dx *= -1;
-        shape.x = graphics.bounds.w - shape.r;
-      }
-      if((shape.y - shape.r) < 0) {
-        shape.dy *= -1;
-        shape.y = shape.r;
-      }
-      if((shape.y + shape.r) >= graphics.bounds.h) {
-        shape.dy *= -1;
-        shape.y = graphics.bounds.h - shape.r;
-      }
+			//graphics.triangle(convertPoint(i *8),convertPoint((i+1) * 8),convertPoint((i+2) *8));
+			// graphics.set_pixel(convertPoint((i+1) * 8));
+			// graphics.set_pixel(convertPoint(i *8));
+			// graphics.set_pixel(convertPoint((i+2) *8));
 
-      graphics.set_pen(shape.pen);
-      graphics.circle(Point(shape.x, shape.y), shape.r);
+			draw_line(convertPoint((i+1) * 8),convertPoint(i *8));
+			draw_line(convertPoint(i *8),convertPoint((i+2) *8));
+			draw_line(convertPoint((i+2) * 8),convertPoint((i+1) * 8));
+			hub75.update(&graphics);
+			sleep_ms(1000 );
+			
 
-    }
+		}
+//Point(((vertices[i*24] / vertices[i*24 +2]) *WIDTH /2 ) + WIDTH/2,((vertices[i*24 +1] / vertices[i*24 +2]) *HEIGHT /2) + HEIGHT/2)
+		// update screen
+		hub75.update(&graphics);
+		sleep_ms(1000 / 30);
+	}
 
-    graphics.set_pen(WHITE);
-    graphics.text("Hello World", text_location, false, 1.0f);
-
-    // update screen
-    hub75.update(&graphics);
-    sleep_ms(1000 / 30);
-  }
-
-  return 0;
+	return 0;
 }
