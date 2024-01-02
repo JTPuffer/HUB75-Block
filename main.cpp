@@ -1,9 +1,11 @@
+#include "math.hpp"
 #include <math.h>
 #include "pico/stdlib.h"
 #include <stdio.h>
 
 #include "libraries/pico_graphics/pico_graphics.hpp"
 #include "drivers/hub75/hub75.hpp"
+
 
 #define WIDTH 64
 #define HEIGHT 32
@@ -58,9 +60,6 @@ const uint8_t QTY_BALLS = 13;
 
 Hub75 hub75(WIDTH, HEIGHT, nullptr, PANEL_FM6126A, false);
 
-
-
-
 PicoGraphics_PenRGB888 graphics(hub75.width, hub75.height, nullptr);
 
 // Callback for the dma interrupt (required)
@@ -89,19 +88,21 @@ void draw_line(const Point &p1, const Point &p2) {
             int32_t py = static_cast<int32_t>(p1.y + unitY * i);
 
             // Draw pixel at the current point
+			if(px < WIDTH && py < HEIGHT)
             graphics.set_pixel(Point(px, py));
         }
 }
+Point convertPoint(int row, bob::Matrix4<double> & theta){
+	bob::Vector4<double> inputVector(vertices[row],vertices[row+1],vertices[row+2],0);
+	bob::Vector4<double> rotatedVectorY =  theta *inputVector;
 
-Point convertPoint(int row){
-	float carC= vertices[row+2]+1.1;
+	float carC= rotatedVectorY.z+1.1;
 
-	float carA = (vertices[row]/carC)+1;
-	float carB = (vertices[row+1]/carC)+1;
+	float carA = ((rotatedVectorY.x * HEIGHT/WIDTH)/carC)+1;
+	float carB = (rotatedVectorY.y/carC)+1;
 	// convert to cartesian
 	carA *= WIDTH/2;
 	carB *=HEIGHT/2;
-	printf("%f %f \n",carA,carB);
 	return Point(carA,carB);
 }
 
@@ -109,37 +110,42 @@ int main() {
 	stdio_init_all();
 	hub75.start(dma_complete);
 
-
-
 	Point text_location(0, 0);
 	Pen BG = graphics.create_pen(0, 0, 0);
 	Pen red = graphics.create_pen(125, 0, 0);
+    Pen green = graphics.create_pen(0, 125, 0);
+    Pen blue = graphics.create_pen(0, 0, 125);
+    Pen orange = graphics.create_pen(125, 125, 0);
 
+    Pen data[12] = {blue,red,green,orange,blue,red,green,orange,blue,red,green,orange};
+	double theta =0.01;
 	while(true) {
 		graphics.set_pen(BG);
 		graphics.clear();
+		theta +=0.001;
+	    bob::Matrix4<double> rotationMatrixX = bob::Matrix4<double>::rotateX(theta);
+	    bob::Matrix4<double> rotationMatrixY = bob::Matrix4<double>::rotateY(theta *0.5);
+	    bob::Matrix4<double> rotateed =  rotationMatrixY * rotationMatrixX;
 		for(int i =0 ;i < 36 ;i+=3){
 
-			graphics.set_pen(red);
+			graphics.set_pen(data[i/3]);
 			// for some reason the graphics display starts at -1?
+            
+			graphics.triangle(convertPoint(i *8,rotateed),convertPoint((i+1) * 8,rotateed),convertPoint((i+2) *8,rotateed));
 
-			//graphics.triangle(convertPoint(i *8),convertPoint((i+1) * 8),convertPoint((i+2) *8));
-			// graphics.set_pixel(convertPoint((i+1) * 8));
-			// graphics.set_pixel(convertPoint(i *8));
-			// graphics.set_pixel(convertPoint((i+2) *8));
+			// draw_line(convertPoint((i+1) * 8,rotateed),convertPoint(i *8,rotateed));
+			// draw_line(convertPoint(i *8,rotateed),convertPoint((i+2) *8,rotateed));
+			// draw_line(convertPoint((i+2) * 8,rotateed),convertPoint((i+1) * 8,rotateed));
 
-			draw_line(convertPoint((i+1) * 8),convertPoint(i *8));
-			draw_line(convertPoint(i *8),convertPoint((i+2) *8));
-			draw_line(convertPoint((i+2) * 8),convertPoint((i+1) * 8));
-			hub75.update(&graphics);
-			sleep_ms(1000 );
-			
+			// convertPoint((i+1) * 8,theta);convertPoint(i *8,theta);
+			// convertPoint(i *8,theta);convertPoint((i+2) *8,theta);
+			// convertPoint((i+2) * 8,theta);convertPoint((i+1) * 8,theta);
 
 		}
-//Point(((vertices[i*24] / vertices[i*24 +2]) *WIDTH /2 ) + WIDTH/2,((vertices[i*24 +1] / vertices[i*24 +2]) *HEIGHT /2) + HEIGHT/2)
+
 		// update screen
 		hub75.update(&graphics);
-		sleep_ms(1000 / 30);
+
 	}
 
 	return 0;
