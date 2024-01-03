@@ -11,11 +11,11 @@ namespace bob {
         Matrix4(std::initializer_list<std::initializer_list<T>> inputList);
         ~Matrix4();
 
-        static Matrix4<double> rotateX(const double angle) {
-            double cosTheta = std::cos(angle);
-            double sinTheta = std::sin(angle);
+        static Matrix4<T> rotateX(const double angle) {
+            T cosTheta = std::cos(angle);
+            T sinTheta = std::sin(angle);
 
-            return Matrix4<double>({
+            return Matrix4<T>({
                 {1, 0, 0, 0},
                 {0, cosTheta, -sinTheta, 0},
                 {0, sinTheta, cosTheta, 0},
@@ -23,22 +23,22 @@ namespace bob {
         }
 
         // Function to create a rotation matrix around the y-axis
-        static Matrix4<double> rotateY(double angle) {
-            double cosTheta = std::cos(angle);
-            double sinTheta = std::sin(angle);
+        static Matrix4<T> rotateY(double angle) {
+            T cosTheta = std::cos(angle);
+            T sinTheta = std::sin(angle);
 
-            return Matrix4<double>({
+            return Matrix4<T>({
                 {cosTheta, 0, sinTheta, 0},
                 {0, 1, 0, 0},
                 {-sinTheta, 0, cosTheta, 0},
                 {0, 0, 0, 1} });
         }
 
-        static Matrix4<double> rotateZ(double angle) {
-            double cosTheta = std::cos(angle);
-            double sinTheta = std::sin(angle);
+        static Matrix4<T> rotateZ(double angle) {
+            T cosTheta = std::cos(angle);
+            T sinTheta = std::sin(angle);
 
-            return Matrix4<double>({
+            return Matrix4<T>({
                 {cosTheta, -sinTheta, 0, 0},
                 {sinTheta, cosTheta, 0, 0},
                 {0, 0, 1, 0},
@@ -170,5 +170,6 @@ namespace bob {
     inline Vector4<T>::~Vector4()
     {
     }
+
 
 }
