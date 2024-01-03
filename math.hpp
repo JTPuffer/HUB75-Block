@@ -125,6 +125,21 @@ namespace bob {
 			return &x;
         }
 
+        Vector4<T> normaliseVec3(){
+            float mag = std::sqrt(x * x + y * y + z * z );
+            return Vector4<T> (x / mag, y / mag, z / mag,1);
+        }
+        float dotProductVec3(Vector4<T> &v1){
+            return x * v1.x + y * v1.y + z * v1.z + w * v1.w;
+        }
+        Vector4<T> normal(const Vector4<T> &v1,const Vector4<T> &v2 ) const {
+            Vector4<T> edge1 = Vector4<T>(v1.x - x, v1.y - y, v1.z - z,1);
+            Vector4<T> edge2 = Vector4<T> (v2.x - x, v2.y - y, v2.z - z,1);
+
+            return Vector4<T>(edge1.y * edge2.z - edge1.z * edge2.y,
+                                edge1.z * edge2.x - edge1.x * edge2.z,
+                                edge1.x * edge2.y - edge1.y * edge2.x,1);
+        }
     };
 
 

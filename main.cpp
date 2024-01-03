@@ -12,46 +12,52 @@
 #define HEIGHT 32
 
 #define NUM_OF_DATA 8
-
-
-float vertices[] = { // positions   // normals // texture coords
-   	-0.5f, -0.5f, -0.5f,	0.0f,  0.0f, -1.0f,		0.0f, 0.0f, 
-     0.5f, -0.5f, -0.5f,	0.0f,  0.0f, -1.0f, 	1.0f, 0.0f,
-     0.5f, 	0.5f, -0.5f,	0.0f,  0.0f, -1.0f, 	1.0f, 1.0f,
-     0.5f, 	0.5f, -0.5f,	0.0f,  0.0f, -1.0f, 	1.0f, 1.0f,
-   	-0.5f, 	0.5f, -0.5f,	0.0f,  0.0f, -1.0f, 	0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,	0.0f,  0.0f, -1.0f, 	0.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,	0.0f,  0.0f,  1.0f, 	0.0f, 0.0f, 
-	 0.5f, -0.5f,  0.5f, 	0.0f,  0.0f,  1.0f, 	1.0f, 0.0f, 
-	 0.5f, 	0.5f,  0.5f, 	0.0f,  0.0f,  1.0f, 	1.0f, 1.0f,
-	 0.5f, 	0.5f,  0.5f, 	0.0f,  0.0f,  1.0f, 	1.0f, 1.0f, 
-	-0.5f, 	0.5f,  0.5f, 	0.0f,  0.0f,  1.0f, 	0.0f, 1.0f,
-	-0.5f, -0.5f,  0.5f, 	0.0f,  0.0f,  1.0f,		0.0f, 0.0f,
-    -0.5f, 	0.5f,  0.5f,   -1.0f,  0.0f,  0.0f, 	1.0f, 0.0f, 
-	-0.5f, 	0.5f, -0.5f,   -1.0f,  0.0f,  0.0f, 	1.0f, 1.0f,
-	-0.5f, -0.5f, -0.5f,   -1.0f,  0.0f,  0.0f, 	0.0f, 1.0f,
-	-0.5f, -0.5f, -0.5f,   -1.0f,  0.0f,  0.0f, 	0.0f, 1.0f, 
-	-0.5f, -0.5f,  0.5f,   -1.0f,  0.0f,  0.0f,	 	0.0f, 0.0f,
-    -0.5f, 	0.5f,  0.5f,   -1.0f,  0.0f,  0.0f, 	1.0f, 0.0f,
-	 0.5f, 	0.5f,  0.5f, 	1.0f,  0.0f,  0.0f, 	1.0f, 0.0f, 
-	 0.5f, 	0.5f, -0.5f, 	1.0f,  0.0f,  0.0f, 	1.0f, 1.0f,
-	 0.5f, -0.5f, -0.5f, 	1.0f,  0.0f,  0.0f, 	0.0f, 1.0f, 
-	 0.5f, -0.5f, -0.5f, 	1.0f,  0.0f,  0.0f, 	0.0f, 1.0f,
-	 0.5f, -0.5f,  0.5f, 	1.0f,  0.0f,  0.0f, 	0.0f, 0.0f,
-	 0.5f, 	0.5f,  0.5f, 	1.0f,  0.0f,  0.0f, 	1.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f, 	0.0f, -1.0f,  0.0f, 	0.0f, 1.0f,
-	 0.5f, -0.5f, -0.5f, 	0.0f, -1.0f,  0.0f, 	1.0f, 1.0f,
-	 0.5f, -0.5f,  0.5f, 	0.0f, -1.0f,  0.0f, 	1.0f, 0.0f,
-	 0.5f, -0.5f,  0.5f, 	0.0f, -1.0f,  0.0f, 	1.0f, 0.0f,
-	-0.5f, -0.5f,  0.5f, 	0.0f, -1.0f,  0.0f, 	0.0f, 0.0f,
-	-0.5f, -0.5f, -0.5f, 	0.0f, -1.0f,  0.0f, 	0.0f, 1.0f,
-    -0.5f, 	0.5f, -0.5f, 	0.0f,  1.0f,  0.0f, 	0.0f, 1.0f,
-	 0.5f, 	0.5f, -0.5f, 	0.0f,  1.0f,  0.0f, 	1.0f, 1.0f, 
-	 0.5f, 	0.5f,  0.5f, 	0.0f,  1.0f,  0.0f, 	1.0f, 0.0f, 
-	 0.5f, 	0.5f,  0.5f, 	0.0f,  1.0f,  0.0f, 	1.0f, 0.0f, 
-	-0.5f, 	0.5f,  0.5f, 	0.0f,  1.0f,  0.0f, 	0.0f, 0.0f, 
-	-0.5f, 	0.5f, -0.5f, 	0.0f,  1.0f,  0.0f, 	0.0f, 1.0f
+float vertices[] = {
+// back face
+-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, // bottom-left
+0.5f, 0.5f, -0.5f, 1.0f, 1.0f, // top-right
+0.5f, -0.5f, -0.5f, 1.0f, 0.0f, // bottom-right
+0.5f, 0.5f, -0.5f, 1.0f, 1.0f, // top-right
+-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, // bottom-left
+-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, // top-left
+// front face
+-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, // bottom-left
+0.5f, -0.5f, 0.5f, 1.0f, 0.0f, // bottom-right
+0.5f, 0.5f, 0.5f, 1.0f, 1.0f, // top-right
+0.5f, 0.5f, 0.5f, 1.0f, 1.0f, // top-right
+-0.5f, 0.5f, 0.5f, 0.0f, 1.0f, // top-left
+-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, // bottom-left
+// left face
+-0.5f, 0.5f, 0.5f, 1.0f, 0.0f, // top-right
+-0.5f, 0.5f, -0.5f, 1.0f, 1.0f, // top-left
+-0.5f, -0.5f, -0.5f, 0.0f, 1.0f, // bottom-left
+-0.5f, -0.5f, -0.5f, 0.0f, 1.0f, // bottom-left
+-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, // bottom-right
+-0.5f, 0.5f, 0.5f, 1.0f, 0.0f, // top-right
+// right face
+0.5f, 0.5f, 0.5f, 1.0f, 0.0f, // top-left
+0.5f, -0.5f, -0.5f, 0.0f, 1.0f, // bottom-right
+0.5f, 0.5f, -0.5f, 1.0f, 1.0f, // top-right
+0.5f, -0.5f, -0.5f, 0.0f, 1.0f, // bottom-right
+0.5f, 0.5f, 0.5f, 1.0f, 0.0f, // top-left
+0.5f, -0.5f, 0.5f, 0.0f, 0.0f, // bottom-left
+// bottom face
+-0.5f, -0.5f, -0.5f, 0.0f, 1.0f, // top-right
+0.5f, -0.5f, -0.5f, 1.0f, 1.0f, // top-left
+0.5f, -0.5f, 0.5f, 1.0f, 0.0f, // bottom-left
+0.5f, -0.5f, 0.5f, 1.0f, 0.0f, // bottom-left
+-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, // bottom-right
+-0.5f, -0.5f, -0.5f, 0.0f, 1.0f, // top-right
+// top face
+-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, // top-left
+0.5f, 0.5f, 0.5f, 1.0f, 0.0f, // bottom-right
+0.5f, 0.5f, -0.5f, 1.0f, 1.0f, // top-right
+0.5f, 0.5f, 0.5f, 1.0f, 0.0f, // bottom-right
+-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, // top-left
+-0.5f, 0.5f, 0.5f, 0.0f, 0.0f // bottom-left
 };
+
+
 
 using namespace pimoroni;
 
@@ -119,7 +125,6 @@ int main() {
 	stdio_init_all();
 	hub75.start(dma_complete);
 
-	Point text_location(0, 0);
 	Pen BG = graphics.create_pen(0, 0, 0);
     Pen pens[12] = {
         graphics.create_pen(255, 255, 255),    // White (Background)
@@ -138,7 +143,7 @@ int main() {
     };
 
     std::vector<triangle_struct> triangles;
-
+	bob::Vector4<float>viewPos =bob::Vector4<float>(0.0f,0.0f,-1.1f,0.0f);
 	double theta =0.01;
 	while(true) {
 		graphics.set_pen(BG);
@@ -150,21 +155,25 @@ int main() {
 		triangles.clear();
 		for(int i =0 ;i < 36 ;i+=3){
 			triangle_struct t ;
-			t.one = convertPoint(i *8,rotateed);
-			t.two = convertPoint((i+1) * 8,rotateed);
-			t.three = convertPoint((i+2) *8,rotateed);
-			t.depth = (t.one.z +t.two.z +t.three.z)/3;
-			t.colour = pens[i/3];
-			triangles.push_back(t);
+			t.one = convertPoint(i *5,rotateed);
+			t.two = convertPoint((i+1) * 5,rotateed);
+			t.three = convertPoint((i+2) *5,rotateed);
+
+    		// Calculate the normal vector (cross product)
+    		bob::Vector4<float> normal = t.one.normal(t.two,t.three).normaliseVec3();
+
+			if(normal.z < -0){ //front facingh as view position is at 0,0 due to the projection allready happening 
+				t.depth = (t.one.z +t.two.z +t.three.z)/3;
+				t.colour = pens[i/3];
+				triangles.push_back(t);
+			}
 		}
         std::sort(triangles.begin(), triangles.end(), [](const triangle_struct& a, const triangle_struct& b) {
             return a.depth > b.depth; // Sort in descending order
         });
-		int i =0;
 		for(triangle_struct t : triangles){
 			graphics.set_pen(t.colour);
 			graphics.triangle(Point(t.one.x,t.one.y),Point(t.two.x,t.two.y),Point(t.three.x,t.three.y));
-			i+=3;
 		}
 		// update screen
 		hub75.update(&graphics);
@@ -173,3 +182,6 @@ int main() {
 
 	return 0;
 }
+			// bob::Vector4<float> one(vertices[i *5],vertices[(i*5)+1],vertices[(i*5)+2],0);
+			// bob::Vector4<float> two(vertices[(i+1)  *5],vertices[((i+1) *5)+1],vertices[((i+1) *5)+2],0);
+			// bob::Vector4<float> three(vertices[(i+2) *5],vertices[((i+2)*5)+1],vertices[((i+2)*5)+2],0);
