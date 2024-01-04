@@ -97,25 +97,26 @@ void draw_line(const Point &p1, const Point &p2) {
             graphics.set_pixel(Point(px, py));
         }
 }
-bob::Vector4<float> convertPoint(int row, bob::Matrix4<float> & theta){
-	bob::Vector4<float> inputVector(vertices[row],vertices[row+1],vertices[row+2],0);
-	bob::Vector4<float> rotatedVectorY =  theta *inputVector;
+bob::Vector3f convertPoint(int row, bob::Matrix4f & theta){
+	bob::Vector4f inputVector(vertices[row],vertices[row+1],vertices[row+2],0);
+	bob::Vector4f rotatedVectorY =  theta *inputVector;
 
-	rotatedVectorY.z= rotatedVectorY.z+1.1;
+	bob::Vector3f converted(rotatedVectorY[0],rotatedVectorY[1],rotatedVectorY[2]);
+	converted.data[2]= converted[2]+1.1;
 
-	rotatedVectorY.x = ((rotatedVectorY.x * HEIGHT/WIDTH)/rotatedVectorY.z)+1;
-	rotatedVectorY.y = (rotatedVectorY.y/rotatedVectorY.z)+1;
+	converted.data[0] = ((converted[0] * HEIGHT/WIDTH)/converted[2])+1;
+	converted.data[1] = (converted[1]/converted[2])+1;
 	// convert to cartesian
-	rotatedVectorY.x *= WIDTH/2;
-	rotatedVectorY.y *=HEIGHT/2;
-	return rotatedVectorY;
+	converted.data[0] = converted[0] * (WIDTH/2);
+	converted.data[1] = converted[1] * (HEIGHT/2);
+	return converted;
 }
 
 struct triangle_struct
 {
-    bob::Vector4<float> one;
-    bob::Vector4<float> two;
-    bob::Vector4<float> three;
+    bob::Vector3f one;
+    bob::Vector3f two;
+    bob::Vector3f three;
     float depth;
 	Pen colour;
 };
@@ -143,28 +144,37 @@ int main() {
     };
 
     std::vector<triangle_struct> triangles;
-	bob::Vector4<float>viewPos =bob::Vector4<float>(0.0f,0.0f,-1.1f,0.0f);
+
 	double theta =0.01;
 	while(true) {
 		graphics.set_pen(BG);
 		graphics.clear();
-		theta +=0.001;
-	    bob::Matrix4<float> rotationMatrixX = bob::Matrix4<float>::rotateX(theta);
-	    bob::Matrix4<float> rotationMatrixY = bob::Matrix4<float>::rotateY(theta *0.5);
-	    bob::Matrix4<float> rotateed =  rotationMatrixY * rotationMatrixX;
+		theta +=0.003;
+	    bob::Matrix4f rotationMatrixX = bob::Matrix4f::rotateX(theta);
+	    bob::Matrix4f rotationMatrixY = bob::Matrix4f::rotateY(theta *0.5);
+		bob::Matrix4f rotationMatrixZ = bob::Matrix4f::rotateZ(theta *0.3);
+	    bob::Matrix4f rotateed =  rotationMatrixY * rotationMatrixX * rotationMatrixZ;
+
+		rotateed.print_matrix();
 		triangles.clear();
 		for(int i =0 ;i < 36 ;i+=3){
 			triangle_struct t ;
 			t.one = convertPoint(i *5,rotateed);
 			t.two = convertPoint((i+1) * 5,rotateed);
 			t.three = convertPoint((i+2) *5,rotateed);
+			
 
     		// Calculate the normal vector (cross product)
-    		bob::Vector4<float> normal = t.one.normal(t.two,t.three).normaliseVec3();
 
-			if(normal.z < -0){ //front facingh as view position is at 0,0 due to the projection allready happening 
-				t.depth = (t.one.z +t.two.z +t.three.z)/3;
-				t.colour = pens[i/3];
+    		bob::Vector3f normal = bob::normal3(t.one,t.two,t.three).normalise();;
+
+			// if angle between view and the normal is greater than pi/2 (90 degrees) 
+			// cos of an angle bigger than 90 is less than 1 so cos(91) < 0
+			// dot product of view and normal is a · b = |a| × |b| × cos(θ)
+			// |a| =1 and |b| =1 so becomes a · b = cos(θ)
+			if(normal[2] < -0){ //front facingh as view position is at 0,0 due to the projection allready happening 
+				t.depth = (t.one[2] +t.two[2] +t.three[2])/3;
+				t.colour = pens[(int)(i/6)];
 				triangles.push_back(t);
 			}
 		}
@@ -173,7 +183,7 @@ int main() {
         });
 		for(triangle_struct t : triangles){
 			graphics.set_pen(t.colour);
-			graphics.triangle(Point(t.one.x,t.one.y),Point(t.two.x,t.two.y),Point(t.three.x,t.three.y));
+			graphics.triangle(Point(t.one[0],t.one[1]),Point(t.two[0],t.two[1]),Point(t.three[0],t.three[1]));
 		}
 		// update screen
 		hub75.update(&graphics);
@@ -182,6 +192,6 @@ int main() {
 
 	return 0;
 }
-			// bob::Vector4<float> one(vertices[i *5],vertices[(i*5)+1],vertices[(i*5)+2],0);
-			// bob::Vector4<float> two(vertices[(i+1)  *5],vertices[((i+1) *5)+1],vertices[((i+1) *5)+2],0);
-			// bob::Vector4<float> three(vertices[(i+2) *5],vertices[((i+2)*5)+1],vertices[((i+2)*5)+2],0);
+			// bob::Vector<float> one(vertices[i *5],vertices[(i*5)+1],vertices[(i*5)+2],0);
+			// bob::Vector<float> two(vertices[(i+1)  *5],vertices[((i+1) *5)+1],vertices[((i+1) *5)+2],0);
+			// bob::Vector<float> three(vertices[(i+2) *5],vertices[((i+2)*5)+1],vertices[((i+2)*5)+2],0);
